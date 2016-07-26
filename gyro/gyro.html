@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="format-detection" content="telephone=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<title>陀螺仪组件</title>
+	<style>
+	body {
+		background: #111;
+	}
+	.info {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 300px;
+		padding: 10px;
+		color: #fff;
+		border: 1px solid rgba(127,255,255,0.75);
+		background: rgba(0, 127, 127, 0.2);
+	}
+	.btns {
+		position: absolute;
+		bottom: 20px;
+		left: 0;
+	}
+	.btns ul {
+		clear: both;
+		padding: 0;
+	}
+	.btns li {
+		margin: 3px;
+		float: left;
+		width: 60px;
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
+		color: #fff;
+		background: rgba(0, 127, 127, 0.5);
+		list-style: none;
+	}
+	.btns li.ac {
+		background: rgba(0, 127, 127, 1);
+	}
+	.btns a {
+		margin: 20px 5px 0;
+		float: left;
+		width: 70px;
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
+		color: #fff;
+		border: 1px solid rgba(127,255,255,0.75);
+		background: rgba(0, 127, 127, 0.5);
+		list-style: none;
+	}
+	.stage {
+		position: relative;
+		width: 100%;
+		height: 500px;
+		/*background: rgba(0, 127, 127, 0.2);*/
+	}
+		.ball {
+		  position: absolute;
+		  z-index: 99;
+		  top   : 50%;
+		  left  : 50%;
+		  width : 20px;
+		  height: 20px;
+		  margin-left: -10px;
+		  margin-top: -10px;
+		  background: red;
+		  border-radius: 50%;
+		}
+	</style>
+	</head>
+	<body>
+		<div class="stage">
+			<div class="ball"></div>
+		</div>
+		<div class="info">
+			<div class="output"></div>
+			<div class="check-ori"></div>
+		</div>
+		<div class="btns">
+			<ul>
+				<li class="ac">左移</li>
+				<li>右移</li>
+				<li>抬起</li>
+				<li>放下</li>
+				<li>左翻</li>
+				<li>右翻</li>
+				<li>左甩</li>
+				<li>右甩</li>
+				<li>前甩</li>
+				<li>后甩</li>
+				<li>上甩</li>
+				<li>下甩</li>
+			</ul>
+			<a href="javascript:Gyro.setOri()">初始化</a>
+			<a href="javascript:Gyro.disconnect()">解除绑定</a>
+			<a href="javascript:Gyro.connect()">重新绑定</a>
+		</div>
+
+		<script src="gyro.js"></script>
+		<script>
+			var $stage = document.querySelector("stage");
+			var $ball = document.querySelector(".ball");
+			var output = document.querySelector('.output');
+			var check = document.querySelector('.check-ori');
+
+			var $lis = document.querySelectorAll('.btns li');
+
+			Gyro.init({
+				target: $ball,
+				// stage: $stage,
+				mode: "m1",
+				// ban: "y",
+				// sens: 500,
+				callback: function(coor, acceleration, msg, mc) {
+					var ori = Gyro.getOri();
+					// var offset_ori = Gyro.getOffsetOri();
+
+					//获取陀螺仪属性
+					output.innerHTML = "陀螺仪初始状态:<br>" + Math.round(ori.a) + " ";
+					output.innerHTML += ", " + Math.round(ori.b) + " ";
+					output.innerHTML += ", " + Math.round(ori.g) + "<br>";
+
+					output.innerHTML += "陀螺仪状态:<br>" + Math.round(coor.a) + " ";
+					output.innerHTML += ", " + Math.round(coor.b) + " ";
+					output.innerHTML += ", " + Math.round(coor.g) + "<br>";
+
+					output.innerHTML += "加速计:<br>" + Math.round(acceleration.x);
+					output.innerHTML += ", " + Math.round(acceleration.y) + " ";
+					output.innerHTML += ", " + Math.round(acceleration.z) + "<br>";
+
+					check.innerHTML = msg;
+
+					if (mc.a == 1) {
+						$lis[0].className = "ac";
+					} else if (mc.a == 2) {
+						$lis[1].className = "ac";
+					} else {
+						$lis[0].className = "";
+						$lis[1].className = "";
+					}
+
+					if (mc.b == 1) {
+						$lis[2].className = "ac";
+					} else if (mc.b == 2) {
+						$lis[3].className = "ac";
+					} else {
+						$lis[2].className = "";
+						$lis[3].className = "";
+					}
+
+					if (mc.g == 1) {
+						$lis[4].className = "ac";
+					} else if (mc.g == 2) {
+						$lis[5].className = "ac";
+					} else {
+						$lis[4].className = "";
+						$lis[5].className = "";
+					}
+
+					if (mc.x == 1) {
+						$lis[6].className = "ac";
+					} else if (mc.x == 2) {
+						$lis[7].className = "ac";
+					} else {
+						$lis[6].className = "";
+						$lis[7].className = "";
+					}
+
+					if (mc.y == 1) {
+						$lis[8].className = "ac";
+					} else if (mc.y == 2) {
+						$lis[9].className = "ac";
+					} else {
+						$lis[8].className = "";
+						$lis[9].className = "";
+					}
+
+					if (mc.z == 1) {
+						$lis[10].className = "ac";
+					} else if (mc.z == 2) {
+						$lis[11].className = "ac";
+					} else {
+						$lis[10].className = "";
+						$lis[11].className = "";
+					}
+
+				}
+			});
+
+
+		</script>
+	</body>
+</html>

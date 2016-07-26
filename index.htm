@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="mobile-agent" content="format=html5;url=http://ccx01.github.io">
+    <meta name="applicable-device"content="mobile">
+    <meta name="robots"content="all"/>
+    <meta name="format-detection"content="telephone=no"/>
+    <meta name="mobile-web-app-capable"content="yes">
+    <meta name="apple-mobile-web-app-capable"content="yes"/>
+    <meta name="Description"content="恶搞版web口袋妖怪，没有任何版权，属于个人兴趣作品，请勿用于商业目的。"/>
+    <meta name="Keywords"content="pokemon,口袋妖怪,三国志,游戏"/>
+    <meta name="viewport"content="width=640,minimum-scale=0,maximum-scale=5,user-scalable=no">
+<title>破壳曼 够！</title>
+<style>
+/*reset*/
+::-webkit-input-placeholder{color:#999;}
+input[type="text"],input[type="password"],select{-webkit-appearance:none;appearance:none;outline:none;-webkit-tap-highlight-color:rgba(0,0,0,0);border-radius:0;font-family:'\5FAE\8F6F\96C5\9ED1';}
+body,ul,ol,p,h1,h2,h3,h4{margin:0;padding:0;}
+img{border:0;display:block;}
+a,button,input{-webkit-tap-highlight-color:rgba(255,0,0,0);}
+ol,ul{list-style:none;}
+html{-webkit-text-size-adjust:none;font-size:16px;}
+body,html{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;width:100%;height:100%;}
+.c:after{content:'\20';display:block;height:0;line-height:0;visibility:hidden;clear:both;}
+.hide{display:none;height:0;font-size:0;line-height:0;visibility:hidden;overflow:hidden;}
+a{text-decoration:none;}
+a:focus{outline:none}
+
+/*page*/
+body{font-size:1rem;overflow:hidden;}
+.stage{width:100%;height:100%;max-width:640px;margin:0 auto;position:relative;overflow:hidden;}
+.dr{
+    margin: 100px auto;
+    width: 300px;
+    height: 400px;
+    background: url(img/dr.jpg) no-repeat;
+    background-size: 100%;
+}
+.dialog{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 640px;
+    height: 100px;
+    background: #000;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1.5rem;
+    padding: 13px 30px;
+    box-sizing: border-box;
+    line-height: 1.5em;
+    z-index: 999;
+}
+.dialog:before{
+    content: "";
+    width: 630px;
+    height: 90px;
+    bottom: 4px;
+    left: 4px;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    background: #000;
+    position: absolute;
+    z-index: -1;
+}
+.confirm,.command {
+    display: none;
+    position: fixed;
+    background: #000;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1.5rem;
+    padding: 13px 30px;
+    box-sizing: border-box;
+    line-height: 2em;
+    z-index: 999;
+    bottom: 110px;
+    right: 10px;
+}
+.confirm a,.command a {
+    display: block;
+    color: #fff;
+}
+.command {
+    width: 300px;
+}
+.command a{
+    width: 120px;
+    float: left;
+}
+.cur{
+    display: block;
+    width: 0px;
+    height: 0px;
+    border: 10px solid rgba(0,0,0,0);
+    border-top: 10px solid #fff; 
+    position: absolute;
+    right: 15px;
+    bottom: 5px;
+    -webkit-animation:bounce 0.8s infinite;
+    animation:bounce 0.8s infinite;
+}
+@-webkit-keyframes bounce{
+    from{-webkit-transform:translateY(0px);}
+    to{-webkit-transform:translateY(3px);}
+}
+@keyframes bounce{
+    from{transform:translateY(0px);}
+    to{-webkit-transform:translateY(3px);}
+}
+.ball {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: url(img/ball.png) no-repeat;
+    background-size: 100%;
+    z-index: 9;
+}
+.b1 {
+        top: 500px;
+    left: 110px;
+}
+.b2 {
+        top: 630px;
+    left: 260px;
+}
+.b3 {
+        top: 500px;
+    left: 510px;
+}
+.ball img {
+    display: none;
+    transform:translate3d(-50%,-50%,0);
+}
+.show_man,.battle{
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 99;
+    background: rgba(0,0,0,0.8);
+    -webkit-animation:flash 0.6s 1;
+    animation:flash 0.6s 1;
+}
+@-webkit-keyframes flash{
+    from,50%{background: rgba(255,255,255,0.1);}
+    to,25%,75%{background: rgba(0,0,0,0.8);}
+}
+@keyframes flash{
+    from,50%{background: rgba(255,255,255,0.1);}
+    to,25%,75%{background: rgba(0,0,0,0.8);}
+}
+.show_man{
+    background-image: url(img/p1.png);
+    background-size: 200px;
+    background-repeat: no-repeat;
+    background-position: 235px 300px;
+}
+.flash1{
+    -webkit-animation:flash1 0.6s 1;
+    animation:flash1 0.6s 1;
+}
+@-webkit-keyframes flash1{
+    from,50%{opacity: 1;}
+    to,25%,75%{opacity: 0.3;}
+}
+@keyframes flash1{
+    from,50%{opacity: 1;}
+    to,25%,75%{opacity: 0.3;}
+}
+.data{
+    display: none;
+    color: #fff;
+    border: 1px solid;
+    width: 500px;
+    height: 400px;
+    margin: 200px auto;
+    font-size: 30px;
+    line-height: 60px;
+        background-color: #000;
+}
+.data img {
+    float: left;
+        margin-right: 30px;
+    height: 400px;
+}
+.enemy,.me {
+    overflow: hidden;
+}
+.me{
+    margin-top: 300px;
+}
+.enemy_info,.me_info {
+    margin: 50px;
+    width: 300px;
+    color: #fff;
+    font-size: 30px;
+    line-height: 60px;
+}
+.enemy_img,.me_info {
+    float: right;
+}
+.enemy_img,.me_img{
+    margin: 50px;
+}
+.enemy_hp,.me_hp {
+    margin-top: 10px;
+    width: 300px;
+    border: 1px solid;
+    height: 10px;
+    padding: 1px;
+}
+.enemy_hp div,.me_hp div{
+    background-color: #fff;
+    width: 100%;
+    height: 8px;
+    transition: 1s;
+}
+</style>
+</head>
+<body>
+    <h1 class="hide">破壳曼 够！</h1>
+    <div class="loading">
+        <span class="num"></span>
+    </div>
+    <div class="stage">
+        <div class="secene s1">
+            <div class="dr"></div>
+            <div class="ball b1"></div>
+            <div class="ball b2"></div>
+            <div class="ball b3"></div>
+            <div class="show_man">
+                <div class="data">
+                    <div><img src="img/p1.png"></div>
+                    <div class="info">
+                        <p>体力：20</p>
+                        <p>武力：5</p>
+                        <p>智力：2</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dialog">
+            <span>hi,我是大木博士<br>选一个喜欢的精灵吧</span>
+            <i class="cur"></i>
+        </div>
+        <div class="confirm">
+            <a class="yes">是</a>
+            <a class="no">让我重新考虑下</a>
+        </div>
+        <div class="command">
+            <a class="atk">大文字</a>
+            <a class="ski">嚎叫</a>
+            <a class="run">逃跑</a>
+        </div>
+
+        <div class="battle">
+            <div class="enemy">
+                <img class="enemy_img" src="img/p2.png">
+                <div class="enemy_info">
+                    <div class="enemy_name">pokemon</div>
+                    <div class="enemy_hp">
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="me">
+                <div class="me_info">
+                    <div class="me_name">pokemon</div>
+                    <div class="me_hp">
+                        <div></div>
+                    </div>
+                </div>
+                <img class="me_img" src="img/p1.png">
+            </div>
+        </div>
+    </div>
+<script type="text/javascript" src="js/zepto.min.js"></script>
+<script>
+if (navigator.appVersion.indexOf('Android') != -1){document.addEventListener("DOMContentLoaded",function (e){document.querySelector('.stage').style.zoom = e.target.activeElement.clientWidth / 640;}
+);}
+
+(function(){
+
+    // 选择精灵
+    var $dia = $(".dialog");
+    var $dia_txt = $(".dialog span");
+    var $confirm = $(".confirm");
+    $(".ball").tap(function(){
+        $(".show_man").show();
+        $dia.hide();
+        setTimeout(function(){
+            $dia.show();
+            $dia_txt.html("你要选择【阿biang哥】吗？");
+            $confirm.show();
+        }, 1000);
+    });
+    $(".yes").tap(function(){
+        $confirm.hide();
+        $(".data").show();
+        $dia_txt.html("恭喜你获得了【阿biang哥】！");
+        $(".show_man").tap(function(){
+            $(".show_man").hide();
+            $(".ball").hide();
+            $dia_txt.html("接下来我来教你如何进行战斗<br>首先摇一摇手机");
+            battle();
+        });
+    });
+    $(".no").tap(function(){
+        $(".show_man").hide();
+        $confirm.hide();
+        $dia_txt.html("选一个喜欢的精灵吧");
+    });
+
+    // 出现精灵
+    var me = {
+        name: "阿biang哥",
+        atk: 5,
+        hp: 20
+    }
+    var enemy = {
+        name: "pokemon",
+        atk: 3,
+        hp: 8
+    }
+
+    function battle() {
+        $(".battle").show();
+        $(".command").show();
+        $dia_txt.html("pokemo出现了");
+    }
+    // 战斗
+    $(".atk").tap(function(){
+
+        $(".enemy_img").addClass('flash1');
+        $(".enemy_hp div").css({
+            "width": "30%"
+        });
+        setTimeout(function(){
+            $(".enemy_img").removeClass('flash1');
+        }, 1000);
+
+    });
+}());
+
+</script>
+</body>
+</html>
