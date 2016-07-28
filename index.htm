@@ -64,7 +64,7 @@ body{font-size:1rem;overflow:hidden;}
     position: absolute;
     z-index: -1;
 }
-.confirm,.command {
+.confirm,.cmd {
     display: none;
     position: fixed;
     background: #000;
@@ -78,14 +78,14 @@ body{font-size:1rem;overflow:hidden;}
     bottom: 110px;
     right: 10px;
 }
-.confirm a,.command a {
+.confirm a,.cmd a {
     display: block;
     color: #fff;
 }
-.command {
+.cmd {
     width: 300px;
 }
-.command a{
+.cmd a{
     width: 120px;
     float: left;
 }
@@ -219,9 +219,21 @@ body{font-size:1rem;overflow:hidden;}
     height: 8px;
     transition: 1s;
 }
+#debug {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+    background-color: rgba(0,0,0,0.5);
+    height: 50px;
+    color: #fff;
+}
 </style>
 </head>
 <body>
+    <div id="debug"></div>
     <h1 class="hide">破壳曼 够！</h1>
     <div class="loading">
         <span class="num"></span>
@@ -237,7 +249,7 @@ body{font-size:1rem;overflow:hidden;}
                     <div><img src="img/p1.png"></div>
                     <div class="info">
                         <p>体力：20</p>
-                        <p>武力：5</p>
+                        <p>武力：2</p>
                         <p>智力：2</p>
                     </div>
                 </div>
@@ -251,10 +263,10 @@ body{font-size:1rem;overflow:hidden;}
             <a class="yes">是</a>
             <a class="no">让我重新考虑下</a>
         </div>
-        <div class="command">
-            <a class="atk">大文字</a>
-            <a class="ski">嚎叫</a>
-            <a class="run">逃跑</a>
+        <div class="cmd">
+            <a data-cmd="atk">大文字</a>
+            <a data-cmd="ski">嚎叫</a>
+            <a data-cmd="run">逃跑</a>
         </div>
 
         <div class="battle">
@@ -279,6 +291,7 @@ body{font-size:1rem;overflow:hidden;}
         </div>
     </div>
 <script type="text/javascript" src="js/zepto.min.js"></script>
+<script src="js/gyro.js"></script>
 <script>
 if (navigator.appVersion.indexOf('Android') != -1){document.addEventListener("DOMContentLoaded",function (e){document.querySelector('.stage').style.zoom = e.target.activeElement.clientWidth / 640;}
 );}
@@ -294,56 +307,188 @@ if (navigator.appVersion.indexOf('Android') != -1){document.addEventListener("DO
         $dia.hide();
         setTimeout(function(){
             $dia.show();
-            $dia_txt.html("你要选择【阿biang哥】吗？");
+            msg("你要选择【阿biang哥】吗？");
             $confirm.show();
         }, 1000);
     });
     $(".yes").tap(function(){
         $confirm.hide();
         $(".data").show();
-        $dia_txt.html("恭喜你获得了【阿biang哥】！");
+        msg("恭喜你获得了【阿biang哥】！");
         $(".show_man").tap(function(){
             $(".show_man").hide();
             $(".ball").hide();
-            $dia_txt.html("接下来我来教你如何进行战斗<br>首先摇一摇手机");
-            battle();
+            msg("接下来我来教你如何进行战斗<br>首先摇一摇手机", function() {
+                Gyro.init({
+                    callback: function(coor, acceleration, msg, mc) {
+                        if(msg.length > 10) {
+                            battle();
+                            Gyro.disconnect();
+                        }
+                    }
+                });
+            });
+            // battle();
         });
     });
     $(".no").tap(function(){
         $(".show_man").hide();
         $confirm.hide();
-        $dia_txt.html("选一个喜欢的精灵吧");
+        msg("选一个喜欢的精灵吧");
     });
 
     // 出现精灵
     var me = {
         name: "阿biang哥",
-        atk: 5,
-        hp: 20
+        atk: 2,
+        hp: 20,
+        full_hp: 20
     }
     var enemy = {
         name: "pokemon",
         atk: 3,
-        hp: 8
+        hp: 8,
+        full_hp: 8
     }
 
     function battle() {
         $(".battle").show();
-        $(".command").show();
-        $dia_txt.html("pokemo出现了");
+        msg("pokemon出现了", cmd);
     }
-    // 战斗
-    $(".atk").tap(function(){
 
-        $(".enemy_img").addClass('flash1');
-        $(".enemy_hp div").css({
-            "width": "30%"
-        });
-        setTimeout(function(){
-            $(".enemy_img").removeClass('flash1');
-        }, 1000);
 
+    var t_msg = 0;
+    function msg(str, cb) {
+        // 文本信息
+        clearTimeout(t_msg);
+        $dia_txt.html("");
+        for (var i = 0, l = str.length; i <= l; i++) {
+            (function(i) {
+                t_msg = setTimeout(function(){
+                    $dia_txt.html(str.slice(0, i + 1));
+                }, 50 * i);
+            }(i));
+        };
+        cb && setTimeout(cb, str.length * 50);
+    }
+
+    var cur_round = "me";
+    function round() {
+        // 回合,判断胜负及一些特殊情况
+        if(enemy.hp <= 0) {
+            msg(enemy.name + "被打倒了！", function() {
+                setTimout(function(){
+                    msg("恭喜你通关了，故事就是这样");
+                }, 1000);
+            });
+            return;
+        }else if(me.hp <= 0) {
+            msg("你输了！", function() {
+                setTimout(function(){
+                    msg("能输也挺不容易的");
+                }, 1000);
+            });
+            return;
+        }
+
+        switch(cur_round) {
+            case "me":
+                cmd();
+            break;
+            case "enemy":
+                ai();
+            break;
+        }
+    }
+
+
+    function ai() {
+        // ai行动
+        msg(enemy.name + "进行攻击!");
+        var ski = Math.random() * 3 | 0;
+        var str;
+        switch(ski) {
+            case 1:
+                me.hp -= enemy.atk;
+                me.hp = Math.max(0, me.hp);
+                me.status = "wound";
+                str = me.name + "受到" + enemy.atk + "点伤害!";
+            break;
+            case 2:
+                me.status = "none";
+                str = enemy.name + "发出求偶信号！未遂！";
+            break;
+            default:
+                me.hp -= enemy.atk;
+                me.hp = Math.max(0, me.hp);
+                me.status = "wound";
+                str = me.name + "受到" + enemy.atk + "点伤害!";
+        }
+        var cb = function() {
+            msg(str, round);
+            cur_round = "me";
+        }
+        refreshInfo("me", cb);
+    }
+
+    function cmd() {
+        // 我方行动
+        $(".cmd").show();
+    }
+
+    // 我方技能
+    $(".cmd a").tap(function(){
+        switch($(this).data("cmd")) {
+            case "atk":
+                enemy.hp -= me.atk;
+                enemy.hp = Math.max(0, enemy.hp);
+                enemy.status = "wound";
+                msg(enemy.name + "受到" + me.atk + "点伤害！");
+            break;
+            case "ski":
+                enemy.status = "none";
+                msg("阿biang哥发出嚎叫！" + enemy.name + "受到惊吓，感到害pia");
+            break;
+            case "run":
+                enemy.status = "none";
+                msg("阿biang哥企图逃跑！");
+            break;
+        }
+        $(".cmd").hide();
+        cur_round = "enemy";
+        refreshInfo("enemy", round);
     });
+
+    function refreshInfo(obj, cb) {
+        // 刷新界面显示信息
+        switch(obj) {
+            case "enemy":
+                if(enemy.status == "wound") {
+                    $(".enemy_img").addClass('flash1');
+                }
+                $(".enemy_hp div").css({
+                    "width": enemy.hp / enemy.full_hp * 100 + "%"
+                });
+                setTimeout(function(){
+                    $(".enemy_img").removeClass('flash1');
+                    cb();
+                }, 1500);
+            break;
+            case "me":
+                if(me.status == "wound") {
+                    $(".me_img").addClass('flash1');
+                }
+                $(".me_hp div").css({
+                    "width": me.hp / me.full_hp * 100 + "%"
+                });
+                setTimeout(function(){
+                    $(".me_img").removeClass('flash1');
+                    cb();
+                }, 1500);
+            break;
+        }
+    }
+
 }());
 
 </script>
